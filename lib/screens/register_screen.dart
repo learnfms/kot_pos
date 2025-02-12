@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
-import 'package:kot_pos/model/store.dart'; // Import the model
+import 'package:kot_pos/model/store.dart'; // Import the Store model
 import 'package:kot_pos/resp/store_repository.dart';
 import 'package:kot_pos/screens/login_screen.dart';
 import 'package:kot_pos/widgets/text_formfield_widget.dart';
@@ -39,7 +39,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await placemarkFromCoordinates(location.latitude, location.longitude);
         if (placemarks.isNotEmpty) {
           for (var placemark in placemarks) {
-            // Using null-aware operators to prevent errors if any part is null
             String addr =
                 '${placemark.street ?? ''} ${placemark.subLocality ?? ''} ${placemark.locality ?? ''} ${placemark.country ?? ''}';
             matchingAddress.add(addr.trim());
@@ -64,11 +63,56 @@ class _RegisterScreenState extends State<RegisterScreen> {
           storeLongitude = locations.first.longitude;
           storeAddress.text = query;
           address = '';
-          listAddress = []; // clear the suggestions after selection
+          listAddress = []; // Clear suggestions after selection
         });
       }
     } catch (e) {
       print('Error in _getLatLng: $e');
+    }
+  }
+
+  // Validates form inputs
+  bool _validateInputs() {
+    if (storeName.text.isEmpty ||
+        storeAddress.text.isEmpty ||
+        storeEmail.text.isEmpty ||
+        storePhone.text.isEmpty ||
+        storePassword.text.isEmpty ||
+        storeLatitude == 0.0 ||
+        storeLongitude == 0.0) {
+      Get.snackbar('Validation Error', 'All fields are required');
+      return false;
+    }
+    return true;
+  }
+
+  // Handles registration logic
+  void _handleRegister() async {
+    if (!_validateInputs()) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      Store store = Store(
+        storeName: storeName.text,
+        storeAddress: storeAddress.text,
+        storeLatitude: storeLatitude,
+        storeLongitude: storeLongitude,
+        storeEmail: storeEmail.text,
+        storePhone: storePhone.text,
+        storePassword: storePassword.text,
+      );
+
+      await repository.registerStore(store: store);
+      Get.to(() => const LoginScreen());
+    } catch (e) {
+      Get.snackbar('Registration Error', 'Failed to register the store');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -115,12 +159,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextFormfieldWidget(
                     hintText: 'Store Address',
                     controller: storeAddress,
-                    onChanged: (query) {
-                      _searchAddress(query);
-                      setState(() {
-                        address = query;
-                      });
-                    },
+                    onChanged: (query) => _searchAddress(query),
                   ),
                   const SizedBox(height: 10),
                   address == ''
@@ -132,28 +171,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: ListView.builder(
                       shrinkWrap: true,
                       itemCount: listAddress.length,
-                      itemBuilder: (context, index) {
-                        return InkWell(
-                          onTap: () => _getLatLng(listAddress[index]),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.location_history,
-                                color: Colors.white,
-                              ),
-                              const SizedBox(width: 15),
-                              Text(
-                                listAddress[index],
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
+                      itemBuilder: (context, index) => InkWell(
+                        onTap: () => _getLatLng(listAddress[index]),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.location_history, color: Colors.white),
+                            const SizedBox(width: 15),
+                            Text(
+                              listAddress[index],
+                              style:
+                              const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                   TextFormfieldWidget(
@@ -176,50 +207,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 20),
                   InkWell(
-                    onTap: () {
-                      setState(() {
-                        isLoading = true;
-                      });
-                      // Create a Store data model with the form values.
-                      Store store = Store(
-                        storeName: storeName.text,
-                        storeAddress: storeAddress.text,
-                        storeLatitude: storeLatitude,
-                        storeLongitude: storeLongitude,
-                        storeEmail: storeEmail.text,
-                        storePhone: storePhone.text,
-                        storePassword: storePassword.text,
-                      );
-                      repository.registerStore(store: store, storeName: '', storeAddress: '', storeLatitude: null).then((value) {
-                        setState(() {
-                          isLoading = false;
-                        });
-                        Get.to(() => const LoginScreen());
-                      });
-                    },
+                    onTap: _handleRegister, // Use the registration handler
                     child: Container(
                       width: double.infinity,
                       height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.deepOrange,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'Sign Up',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                      decoration:
+                      BoxDecoration(color: Colors.deepOrange, borderRadius: BorderRadius.circular(10)),
+                      child:
+                      const Center(child: Text('Sign Up', style: TextStyle(fontSize: 18, color: Colors.white, fontWeight:
+                      FontWeight.bold))),
                     ),
-                  ),
+                  )
                 ],
               ),
             ),
-          ),
+          )
         ],
       ),
     );

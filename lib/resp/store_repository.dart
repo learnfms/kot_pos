@@ -1,10 +1,12 @@
 import 'dart:convert';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:get/get.dart';
+import '../model/store.dart';
 
 class StoreRepository {
-  final String serverUrl = "http://10.0.2.2:3000/store";
+  final String baseUrl = "http://localhost:3000/store";
 
+  // Method to register a store
   Future<void> registerStore({
     required String storeName,
     required String storeAddress,
@@ -16,7 +18,7 @@ class StoreRepository {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('$serverUrl/registerStore'),
+        Uri.parse('$baseUrl/registerStore'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'storeName': storeName,
@@ -31,13 +33,39 @@ class StoreRepository {
 
       if (response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
-        Get.snackbar('Registration Successful', responseData['message']);
+        Get.snackbar('Success', responseData['message']);
       } else {
         final responseData = jsonDecode(response.body);
-        Get.snackbar('Registration Failed', responseData['error']);
+        Get.snackbar('Error', responseData['error']);
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to register store');
+    }
+  }
+
+  // Method to log in a store
+  Future<Store?> loginStore({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/loginStore'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'storeEmail': email, 'storePassword': password}),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        return Store.fromJson(responseData['store']);
+      } else if (response.statusCode == 401) {
+        Get.snackbar('Login Error', 'Invalid credentials');
+      } else {
+        Get.snackbar('Error', 'Failed to log in');
       }
     } catch (e) {
       Get.snackbar('Error', 'An unexpected error occurred');
     }
+    return null;
   }
 }
