@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kot_pos/shared_preferences/store_data_manager.dart';
-
 import '../model/store.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -28,17 +27,16 @@ class _HomeScreenState extends State<HomeScreen> {
       body: FutureBuilder<Store?>(
         future: future,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            // Show a loading indicator while waiting for data
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            // Handle errors
+          if (snapshot.hasError) {
             return Center(
               child: Text(
-                'Error loading store data',
+                'Error loading store data: ${snapshot.error}',
                 style: TextStyle(color: Colors.red, fontSize: 18),
               ),
             );
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            // Show a loading indicator while waiting for data
+            return const Center(child: CircularProgressIndicator());
           } else if (!snapshot.hasData || snapshot.data == null) {
             // Handle case where no data is available
             return Center(

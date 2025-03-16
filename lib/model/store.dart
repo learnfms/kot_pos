@@ -17,9 +17,25 @@ class Store {
     required this.storeEmail,
     required this.storePhone,
     this.storePassword,
-  });
+  }) {
+    if (storeName.isEmpty ||
+        storeAddress.isEmpty ||
+        storeEmail.isEmpty ||
+        storePhone.isEmpty) {
+      throw Exception('Required fields cannot be empty');
+    }
+  }
 
   factory Store.fromJson(Map<String, dynamic> json) {
+    if (!json.containsKey('storeName') ||
+        !json.containsKey('storeAddress') ||
+        !json.containsKey('storeLatitude') ||
+        !json.containsKey('storeLongitude') ||
+        !json.containsKey('storeEmail') ||
+        !json.containsKey('storePhone')) {
+      throw Exception('Missing required fields in JSON');
+    }
+
     return Store(
       id: json['id'],
       storeName: json['storeName'],

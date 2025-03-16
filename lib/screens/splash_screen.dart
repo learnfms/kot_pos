@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kot_pos/screens/welcome_screen.dart';
-import 'package:kot_pos/shared_preferences/store_data_manager.dart';
 import 'package:kot_pos/screens/home_screen.dart'; // Add this import
+import 'package:kot_pos/shared_preferences/store_data_manager.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -23,16 +23,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _checkLoginStatus() async {
     isLoggedIn = await StoreDataManager.hasStoreData();
-    Timer(
-      const Duration(seconds: 3),
-          () {
-        if (isLoggedIn) {
-          Get.off(() => const HomeScreen()); // Navigate to HomeScreen if logged in
-        } else {
-          Get.off(() => const WelcomeScreen()); // Navigate to WelcomeScreen if not logged in
-        }
-      },
-    );
+    await Future.delayed(const Duration(seconds: 3)); // Wait for 3 seconds
+    if (isLoggedIn) {
+      Get.off(() => const HomeScreen()); // Navigate to HomeScreen if logged in
+    } else {
+      Get.off(() => const WelcomeScreen()); // Navigate to WelcomeScreen if not logged in
+    }
   }
 
   @override

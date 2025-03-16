@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import '../model/store.dart';
+import '../shared_preferences/store_data_manager.dart';
 
 class StoreRepository {
   final String baseUrl = "http://localhost:3000/store";
@@ -34,12 +35,16 @@ class StoreRepository {
       if (response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
         Get.snackbar('Success', responseData['message']);
-      } else {
+      } else if (response.statusCode >= 400 && response.statusCode < 500) {
         final responseData = jsonDecode(response.body);
-        Get.snackbar('Error', responseData['error']);
+        Get.snackbar('Error', 'Client error: ${responseData['error']}');
+      } else if (response.statusCode >= 500) {
+        Get.snackbar('Error', 'Server error: ${response.statusCode}');
+      } else {
+        Get.snackbar('Error', 'Unexpected error');
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to register store');
+      Get.snackbar('Error', 'Failed to register store: $e');
     }
   }
 
@@ -57,15 +62,27 @@ class StoreRepository {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-        return Store.fromJson(responseData['store']);
+        final store = Store.fromJson(responseData['store']);
+        await StoreDataManager.saveStoreData(store); // Save store data
+        return store;
       } else if (response.statusCode == 401) {
         Get.snackbar('Login Error', 'Invalid credentials');
+      } else if (response.statusCode >= 400 && response.statusCode < 500) {
+        final responseData = jsonDecode(response.body);
+        Get.snackbar('Error', 'Client error: ${responseData['error']}');
+      } else if (response.statusCode >= 500) {
+        Get.snackbar('Error', 'Server error: ${response.statusCode}');
       } else {
-        Get.snackbar('Error', 'Failed to log in');
+        Get.snackbar('Error', 'Unexpected error');
       }
     } catch (e) {
-      Get.snackbar('Error', 'An unexpected error occurred');
+      Get.snackbar('Error', 'An unexpected error occurred: $e');
     }
     return null;
+  }
+
+  Future<void> logout() async {
+    await StoreDataManager.removeStoreData();
+    Get.off(() => const WelcomeScreen());
   }
 }

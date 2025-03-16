@@ -51,6 +51,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         storePassword: storePasswordController.text,
       );
       Get.to(() => const LoginScreen());
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to register store: $e');
     } finally {
       setState(() {
         isLoading = false;
@@ -70,52 +72,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: isLoading
                 ? const CircularProgressIndicator()
                 : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextFormfieldWidget(
-                      hintText: 'Store Name',
-                      controller: storeNameController,
-                      onChanged: (_) {},
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextFormfieldWidget(
+                            hintText: 'Store Name',
+                            controller: storeNameController,
+                            onChanged: (_) {},
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormfieldWidget(
+                            hintText: 'Store Address',
+                            controller: storeAddressController,
+                            onChanged: (_) {},
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormfieldWidget(
+                            hintText: 'Store Email',
+                            controller: storeEmailController,
+                            onChanged: (_) {},
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormfieldWidget(
+                            hintText: 'Store Phone',
+                            controller: storePhoneController,
+                            onChanged: (_) {},
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormfieldWidget(
+                            hintText: 'Password',
+                            controller: storePasswordController,
+                            isPassword: true,
+                            onChanged: (_) {},
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: isLoading ? null : _handleRegister, // Disable button when loading
+                            child: const Text('Register', style: TextStyle(fontSize: 18)),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 10),
-                    TextFormfieldWidget(
-                      hintText: 'Store Address',
-                      controller: storeAddressController,
-                      onChanged: (_) {},
-                    ),
-                    const SizedBox(height: 10),
-                    TextFormfieldWidget(
-                      hintText: 'Store Email',
-                      controller: storeEmailController,
-                      onChanged: (_) {},
-                    ),
-                    const SizedBox(height: 10),
-                    TextFormfieldWidget(
-                      hintText: 'Store Phone',
-                      controller: storePhoneController,
-                      onChanged: (_) {},
-                    ),
-                    const SizedBox(height: 10),
-                    TextFormfieldWidget(
-                      hintText: 'Password',
-                      controller: storePasswordController,
-                      isPassword: true,
-                      onChanged: (_) {},
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed:
-                      isLoading ? null : _handleRegister, // Disable button when loading
-                      child:
-                      const Text('Register', style: TextStyle(fontSize: 18)),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+                  ),
           ),
         ],
       ),
