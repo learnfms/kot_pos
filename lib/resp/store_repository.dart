@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import '../model/store.dart';
 import '../shared_preferences/store_data_manager.dart';
+import '../screens/welcome_screen.dart';
 
 class StoreRepository {
   final String baseUrl = "http://localhost:3000/store";

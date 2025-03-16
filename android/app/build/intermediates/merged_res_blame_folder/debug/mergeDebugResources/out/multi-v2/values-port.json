@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.kotpos.kot_pos.app-mergeDebugResources-39:/values-port/values-port.xml",
+            "map": [
+                {
+                    "source": "/Users/famees/.gradle/caches/8.11.1/transforms/3f3fc93ac5f179dd9396debc95ccd465/transformed/appcompat-1.1.0/res/values-port/values-port.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "55",
+                        "endOffsets": "106"
+                    }
+                }
+            ]
+        }
+    ]
+}

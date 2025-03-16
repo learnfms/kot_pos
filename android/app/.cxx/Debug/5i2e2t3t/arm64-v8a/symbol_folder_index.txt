@@ -1,0 +1,1 @@
+/Users/famees/Documents/AndroidStudio/kot_pos/build/app/intermediates/cxx/Debug/5i2e2t3t/obj/arm64-v8a

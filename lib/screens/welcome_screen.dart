@@ -4,7 +4,7 @@ import 'package:kot_pos/screens/login_screen.dart';
 import 'package:kot_pos/screens/register_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  const WelcomeScreen({Key? key}) : super(key: key);
+  const WelcomeScreen({super.key}); // Updated to use 'super.key'
 
   @override
   State<WelcomeScreen> createState() => _WelcomeScreenState();
