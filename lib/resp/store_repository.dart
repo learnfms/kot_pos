@@ -6,7 +6,7 @@ import '../shared_preferences/store_data_manager.dart';
 import '../screens/welcome_screen.dart';
 
 class StoreRepository {
-  final String baseUrl = "http://localhost:3000/store";
+  final String baseUrl = "http://192.168.1.5:3000/store";
 
   // Method to register a store
   Future<void> registerStore({

@@ -24,41 +24,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool isLoading = false;
   final StoreRepository repository = StoreRepository();
 
-  void _handleRegister() async {
-    if (storeNameController.text.isEmpty ||
-        storeAddressController.text.isEmpty ||
-        storeEmailController.text.isEmpty ||
-        storePhoneController.text.isEmpty ||
-        storePasswordController.text.isEmpty ||
-        storeLatitude == 0.0 ||
-        storeLongitude == 0.0) {
-      Get.snackbar('Validation Error', 'All fields are required');
-      return;
-    }
-
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      await repository.registerStore(
-        storeName: storeNameController.text,
-        storeAddress: storeAddressController.text,
-        storeLatitude: storeLatitude,
-        storeLongitude: storeLongitude,
-        storeEmail: storeEmailController.text,
-        storePhone: storePhoneController.text,
-        storePassword: storePasswordController.text,
-      );
-      Get.to(() => const LoginScreen());
-    } catch (e) {
-      Get.snackbar('Error', 'Failed to register store: $e');
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
+void _handleRegister() async {
+  if (storeNameController.text.trim().isEmpty ||
+      storeAddressController.text.trim().isEmpty ||
+      storeEmailController.text.trim().isEmpty ||
+      storePhoneController.text.trim().isEmpty ||
+      storePasswordController.text.trim().isEmpty) {
+    Get.snackbar('Validation Error', 'All fields are required');
+    return;
   }
+
+  // Proceed with form submission
+  setState(() {
+    isLoading = true;
+  });
+
+  try {
+    await repository.registerStore(
+      storeName: storeNameController.text.trim(),
+      storeAddress: storeAddressController.text.trim(),
+      storeLatitude: storeLatitude,
+      storeLongitude: storeLongitude,
+      storeEmail: storeEmailController.text.trim(),
+      storePhone: storePhoneController.text.trim(),
+      storePassword: storePasswordController.text.trim(),
+    );
+    Get.to(() => const LoginScreen());
+  } finally {
+    setState(() {
+      isLoading = false;
+    });
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
