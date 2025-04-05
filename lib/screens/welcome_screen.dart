@@ -4,7 +4,7 @@ import 'package:kot_pos/screens/login_screen.dart';
 import 'package:kot_pos/screens/register_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  const WelcomeScreen({super.key}); // Updated to use 'super.key'
+  const WelcomeScreen({super.key});
 
   @override
   State<WelcomeScreen> createState() => _WelcomeScreenState();
@@ -25,11 +25,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           Center(
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.grey,
+                color: Colors.grey.withOpacity(0.9), // Add transparency
                 borderRadius: BorderRadius.circular(10),
               ),
-              width: 600,
-              padding: const EdgeInsets.only(right: 10, left: 10, top: 30, bottom: 20),
+              width: MediaQuery.of(context).size.width * 0.8,
+              padding: const EdgeInsets.only(right: 20, left: 20, top: 30, bottom: 20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -54,7 +54,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       child: const Center(
                         child: Text(
                           'LogIn',
-                          style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
+                          style:
+                              TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -75,7 +76,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       child: const Center(
                         child: Text(
                           'Sign Up',
-                          style: TextStyle(fontSize: 18, color: Colors.deepOrange, fontWeight: FontWeight.bold),
+                          style:
+                              TextStyle(fontSize: 18, color: Colors.deepOrange, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),

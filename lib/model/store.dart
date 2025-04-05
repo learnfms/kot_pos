@@ -1,12 +1,12 @@
 class Store {
-  final String? id;
+  final int? id;
   final String storeName;
   final String storeAddress;
   final double storeLatitude;
   final double storeLongitude;
   final String storeEmail;
   final String storePhone;
-  final String? storePassword; // Optional, as it shouldn't be returned from the server
+  final String? storePassword;
 
   Store({
     this.id,
@@ -17,68 +17,40 @@ class Store {
     required this.storeEmail,
     required this.storePhone,
     this.storePassword,
-  }) {
-    if (storeName.isEmpty ||
-        storeAddress.isEmpty ||
-        storeEmail.isEmpty ||
-        storePhone.isEmpty) {
-      throw Exception('Required fields cannot be empty');
-    }
-  }
+  });
 
   factory Store.fromJson(Map<String, dynamic> json) {
-    if (!json.containsKey('storeName') ||
-        !json.containsKey('storeAddress') ||
-        !json.containsKey('storeLatitude') ||
-        !json.containsKey('storeLongitude') ||
-        !json.containsKey('storeEmail') ||
-        !json.containsKey('storePhone')) {
+    if (!json.containsKey('store_name') ||
+        !json.containsKey('store_address') ||
+        !json.containsKey('store_latitude') ||
+        !json.containsKey('store_longitude') ||
+        !json.containsKey('store_email') ||
+        !json.containsKey('store_phone')) {
       throw Exception('Missing required fields in JSON');
     }
 
     return Store(
       id: json['id'],
-      storeName: json['storeName'],
-      storeAddress: json['storeAddress'],
-      storeLatitude: json['storeLatitude'].toDouble(),
-      storeLongitude: json['storeLongitude'].toDouble(),
-      storeEmail: json['storeEmail'],
-      storePhone: json['storePhone'],
+      storeName: json['store_name'],
+      storeAddress: json['store_address'],
+      storeLatitude: (json['store_latitude'] as num).toDouble(),
+      storeLongitude: (json['store_longitude'] as num).toDouble(),
+      storeEmail: json['store_email'],
+      storePhone: json['store_phone'],
+      storePassword: json['store_password'], // Optional field
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'storeName': storeName,
-      'storeAddress': storeAddress,
-      'storeLatitude': storeLatitude,
-      'storeLongitude': storeLongitude,
-      'storeEmail': storeEmail,
-      'storePhone': storePhone,
-      if (storePassword != null) 'storePassword': storePassword,
+      'store_name': storeName,
+      'store_address': storeAddress,
+      'store_latitude': storeLatitude,
+      'store_longitude': storeLongitude,
+      'store_email': storeEmail,
+      'store_phone': storePhone,
+      if (storePassword != null) 'store_password': storePassword,
     };
-  }
-
-  Store copyWith({
-    String? id,
-    String? storeName,
-    String? storeAddress,
-    double? storeLatitude,
-    double? storeLongitude,
-    String? storeEmail,
-    String? storePhone,
-    String? storePassword,
-  }) {
-    return Store(
-      id: id ?? this.id,
-      storeName: storeName ?? this.storeName,
-      storeAddress: storeAddress ?? this.storeAddress,
-      storeLatitude: storeLatitude ?? this.storeLatitude,
-      storeLongitude: storeLongitude ?? this.storeLongitude,
-      storeEmail: storeEmail ?? this.storeEmail,
-      storePhone: storePhone ?? this.storePhone,
-      storePassword: storePassword ?? this.storePassword,
-    );
   }
 }
