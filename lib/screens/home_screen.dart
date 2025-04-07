@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kot_pos/shared_preferences/store_data_manager.dart';
 import '../model/store.dart';
+import 'kitchen_screen.dart'; // Import Kitchen Screen
+import 'order_management_screen.dart'; // Import Order Management Screen
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -46,12 +48,39 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             );
           } else {
-            // Data is available, display it
+            // Data is available, display it with navigation options
             final store = snapshot.data!;
-            return Center(
-              child: Text(
-                'Welcome, ${store.storeName}!',
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Welcome, ${store.storeName}!',
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => KitchenScreen()),
+                      );
+                    },
+                    child: const Text('Go to Kitchen Orders'),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => OrderManagementScreen()),
+                      );
+                    },
+                    child: const Text('Manage Orders'),
+                  ),
+                ],
               ),
             );
           }

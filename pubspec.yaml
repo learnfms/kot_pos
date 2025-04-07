@@ -38,6 +38,7 @@ dependencies:
   get: any
   geocoding: any
   shared_preferences: any
+  web_socket_channel: ^3.0.2
 
 
 dev_dependencies:
