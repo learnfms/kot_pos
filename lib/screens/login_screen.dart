@@ -20,27 +20,33 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Log In'),
-      ),
       body: Stack(
         children: <Widget>[
-          Image.asset('assets/images/background.png', width: double.infinity, fit: BoxFit.cover,),
+          // Background Image
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                // Use NetworkImage for testing or AssetImage for local assets
+                image: NetworkImage('https://images.pexels.com/photos/235990/pexels-photo-235990.jpeg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
           Center(
             child: isLoading
                 ? Container(
                     padding: EdgeInsets.all(50),
                     decoration: BoxDecoration(
-                      color: Colors.grey,
+                      color: Colors.grey.withOpacity(0.8), // Add transparency to loading container
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Center(child: CircularProgressIndicator(),),
+                    child: Center(child: CircularProgressIndicator()),
                   )
                 : Container(
                     width: 600,
                     padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.grey,
+                      color: Colors.grey.withOpacity(0.8), // Add transparency to login container
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: SingleChildScrollView(
@@ -50,16 +56,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           TextFormfieldWidget(
                             hintText: 'Store Email',
                             controller: storeEmail,
-                            onChanged: (text){},
+                            onChanged: (text) {},
                           ),
-                          SizedBox(height: 10,),
+                          SizedBox(height: 10),
                           TextFormfieldWidget(
                             hintText: 'Store Password',
                             controller: storePassword,
-                            onChanged: (s){},
+                            onChanged: (s) {},
                             isPassword: true,
                           ),
-                          SizedBox(height: 20,),
+                          SizedBox(height: 20),
                           InkWell(
                             onTap: () async {
                               setState(() {
@@ -69,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (store == null) {
                                 Get.snackbar('Login Error', 'Unable to login');
                               } else {
-                                Get.to(HomeScreen());
+                                Get.to(() => const HomeScreen());
                               }
                               setState(() {
                                 isLoading = false;
@@ -78,14 +84,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: Container(
                               decoration: BoxDecoration(
                                   color: Colors.deepOrange,
-                                  borderRadius: BorderRadius.circular(10)
-                              ),
+                                  borderRadius: BorderRadius.circular(10)),
                               width: double.infinity,
                               height: 50,
                               child: Center(
                                 child: Text(
                                   'Log In!!',
-                                  style: TextStyle(color: Colors.white,fontSize: 18, fontWeight: FontWeight.bold),
+                                  style:
+                                      TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                                 ),
                               ),
                             ),
@@ -95,7 +101,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
           )
-
         ],
       ),
     );

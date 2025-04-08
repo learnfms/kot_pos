@@ -3,6 +3,7 @@ import 'package:kot_pos/shared_preferences/store_data_manager.dart';
 import '../model/store.dart';
 import 'kitchen_screen.dart'; // Import Kitchen Screen
 import 'order_management_screen.dart'; // Import Order Management Screen
+import 'menu_management_screen.dart'; // Import Menu Management Screen
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -79,6 +80,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     },
                     child: const Text('Manage Orders'),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MenuManagementScreen()),
+                      );
+                    },
+                    child: const Text('Manage Menu'),
                   ),
                 ],
               ),

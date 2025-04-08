@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../model/order.dart';
 
 class OrderRepository {
-  final String baseUrl = 'http://192.168.1.5:3000/store';
+  final String baseUrl = 'http://192.168.1.3:3000/store';
 
   Future<void> createOrder(int tableNumber, List<OrderItem> items) async {
     final response = await http.post(
