@@ -1,42 +1,34 @@
 class Store {
   final int? id;
-  final String storeName;
-  final String storeAddress;
-  final double storeLatitude;
-  final double storeLongitude;
+  final String? storeName; // Made optional
+  final String? storeAddress; // Made optional
+  final double? storeLatitude; // Made optional
+  final double? storeLongitude; // Made optional
   final String storeEmail;
-  final String storePhone;
-  final String? storePassword;
+  final String? storePhone; // Made optional
+  final String? storePassword; // Optional field
 
   Store({
     this.id,
-    required this.storeName,
-    required this.storeAddress,
-    required this.storeLatitude,
-    required this.storeLongitude,
+    this.storeName,
+    this.storeAddress,
+    this.storeLatitude,
+    this.storeLongitude,
     required this.storeEmail,
-    required this.storePhone,
+    this.storePhone,
     this.storePassword,
   });
 
   factory Store.fromJson(Map<String, dynamic> json) {
-    if (!json.containsKey('store_name') ||
-        !json.containsKey('store_address') ||
-        !json.containsKey('store_latitude') ||
-        !json.containsKey('store_longitude') ||
-        !json.containsKey('store_email') ||
-        !json.containsKey('store_phone')) {
-      throw Exception('Missing required fields in JSON');
-    }
-
+    // Handle missing fields gracefully
     return Store(
       id: json['id'],
-      storeName: json['store_name'],
-      storeAddress: json['store_address'],
-      storeLatitude: (json['store_latitude'] as num).toDouble(),
-      storeLongitude: (json['store_longitude'] as num).toDouble(),
-      storeEmail: json['store_email'],
-      storePhone: json['store_phone'],
+      storeName: json['store_name'], // Optional field
+      storeAddress: json['store_address'], // Optional field
+      storeLatitude: json.containsKey('store_latitude') ? (json['store_latitude'] as num).toDouble() : null,
+      storeLongitude: json.containsKey('store_longitude') ? (json['store_longitude'] as num).toDouble() : null,
+      storeEmail: json['email'] ?? '', // Required field (use 'email' instead of 'store_email' based on backend response)
+      storePhone: json['phone'], // Optional field
       storePassword: json['store_password'], // Optional field
     );
   }
@@ -48,9 +40,9 @@ class Store {
       'store_address': storeAddress,
       'store_latitude': storeLatitude,
       'store_longitude': storeLongitude,
-      'store_email': storeEmail,
-      'store_phone': storePhone,
-      if (storePassword != null) 'store_password': storePassword,
+      'email': storeEmail, // Use 'email' instead of 'store_email' for consistency with backend response
+      'phone': storePhone, // Optional field
+      if (storePassword != null) 'store_password': storePassword, // Include only if not null
     };
   }
 }

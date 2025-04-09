@@ -6,7 +6,7 @@ import '../shared_preferences/store_data_manager.dart';
 import '../screens/welcome_screen.dart';
 
 class StoreRepository {
-  final String baseUrl = "http://192.168.1.3:3000/store";
+  final String baseUrl = "http://192.168.1.5:3000/store";
 
   // Method to register a store
   Future<void> registerStore({
@@ -19,6 +19,12 @@ class StoreRepository {
     required String storePassword,
   }) async {
     try {
+      // Validate input
+      if (storeName.isEmpty || storeEmail.isEmpty || storePassword.isEmpty) {
+        Get.snackbar('Validation Error', 'Please fill all required fields');
+        return;
+      }
+      
       final response = await http.post(
         Uri.parse('$baseUrl/registerStore'),
         headers: {'Content-Type': 'application/json'},
@@ -33,54 +39,77 @@ class StoreRepository {
         }),
       );
 
+      print('Register response status: ${response.statusCode}');
+      print('Register response body: ${response.body}');
+
       if (response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
         Get.snackbar('Success', responseData['message']);
       } else if (response.statusCode >= 400 && response.statusCode < 500) {
         final responseData = jsonDecode(response.body);
-        Get.snackbar('Error', 'Client error: ${responseData['error']}');
+        Get.snackbar('Error', 'Client error: ${responseData['error'] ?? responseData['message'] ?? "Unknown error"}');
       } else if (response.statusCode >= 500) {
         Get.snackbar('Error', 'Server error: ${response.statusCode}');
       } else {
         Get.snackbar('Error', 'Unexpected error');
       }
     } catch (e) {
+      print('Register exception: $e');
       Get.snackbar('Error', 'Failed to register store: $e');
     }
   }
 
   // Method to log in a store
-  Future<Store?> loginStore({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/loginStore'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'storeEmail': email, 'storePassword': password}),
-      );
-
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        final store = Store.fromJson(responseData['store']);
-        await StoreDataManager.saveStoreData(store); // Save store data
-        return store;
-      } else if (response.statusCode == 401) {
-        Get.snackbar('Login Error', 'Invalid credentials');
-      } else if (response.statusCode >= 400 && response.statusCode < 500) {
-        final responseData = jsonDecode(response.body);
-        Get.snackbar('Error', 'Client error: ${responseData['error']}');
-      } else if (response.statusCode >= 500) {
-        Get.snackbar('Error', 'Server error: ${response.statusCode}');
-      } else {
-        Get.snackbar('Error', 'Unexpected error');
-      }
-    } catch (e) {
-      Get.snackbar('Error', 'An unexpected error occurred: $e');
+Future<Store?> loginStore({
+  required String email,
+  required String password,
+}) async {
+  try {
+    // Validate input
+    if (email.isEmpty || password.isEmpty) {
+      Get.snackbar('Validation Error', 'Email and password are required');
+      return null;
     }
-    return null;
+
+    // Payload with correct field names
+    final Map<String, dynamic> payload = {
+      'storeEmail': email,  // Match backend field name
+      'storePassword': password,  // Match backend field name
+    };
+
+    print('Login payload: $payload'); // Debugging
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/loginStore'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(payload),
+    );
+
+    print('Login response status: ${response.statusCode}');
+    print('Login response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      final store = Store.fromJson(responseData['store']);
+      await StoreDataManager.saveStoreData(store); // Save store data locally
+      return store;
+    } else if (response.statusCode == 401) {
+      Get.snackbar('Login Error', 'Invalid credentials');
+    } else if (response.statusCode >= 400 && response.statusCode < 500) {
+      final responseData = jsonDecode(response.body);
+      Get.snackbar('Error', 'Client error: ${responseData['error'] ?? "Unknown error"}');
+    } else if (response.statusCode >= 500) {
+      Get.snackbar('Error', 'Server error: ${response.statusCode}');
+    } else {
+      Get.snackbar('Error', 'Unexpected error');
+    }
+  } catch (e) {
+    print('Login exception: $e');
+    Get.snackbar('Error', 'An unexpected error occurred: $e');
   }
+  return null;
+}
+
 
   Future<void> logout() async {
     await StoreDataManager.removeStoreData();

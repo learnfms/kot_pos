@@ -1,0 +1,2 @@
+/Users/famees/Documents/AndroidStudio/kot_pos/android/app/.cxx/RelWithDebInfo/2jt1z3p5/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/famees/Documents/AndroidStudio/kot_pos/android/app/.cxx/RelWithDebInfo/2jt1z3p5/armeabi-v7a/CMakeFiles/rebuild_cache.dir
