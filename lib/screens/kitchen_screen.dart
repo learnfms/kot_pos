@@ -1,8 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../resp/order_repository.dart';
-import '../model/order.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import '../model/order.dart';
+import '../resp/order_repository.dart';
 
 class KitchenScreen extends StatefulWidget {
   @override
@@ -10,94 +11,96 @@ class KitchenScreen extends StatefulWidget {
 }
 
 class _KitchenScreenState extends State<KitchenScreen> {
-  final OrderRepository repository = OrderRepository();
-  late Future<List<Order>> futureOrders;
-//   final channel = WebSocketChannel.connect(Uri.parse('ws://192.168.1.5:3000')); // Replace with your backend's IP
-final channel = WebSocketChannel.connect(Uri.parse('ws://192.168.1.5:3000'));
+  late final OrderRepository _repository;
+  late final WebSocketChannel _channel;
+  late Future<List<Order>> _futureOrders;
 
   @override
   void initState() {
     super.initState();
-    futureOrders = repository.fetchOrders();
+    _repository = OrderRepository();
+    _futureOrders = _repository.fetchOrders();
+    _channel = WebSocketChannel.connect(Uri.parse('ws://your-backend/orders'));
+    _configureWebSocket();
+  }
 
-    // Listen for real-time updates from the backend
-    channel.stream.listen(
-      (data) {
-        print('Real-time update received: $data');
-
-        // Parse WebSocket data (assuming it's JSON)
-        final parsedData = jsonDecode(data);
-
-        // Handle specific events (e.g., newOrder, orderStatusUpdated)
-        if (parsedData['event'] == 'newOrder') {
-          showNotification('New Order Created! Table ${parsedData['tableNumber']}');
-          setState(() {
-            futureOrders = repository.fetchOrders(); // Refresh orders
-          });
-        } else if (parsedData['event'] == 'orderStatusUpdated') {
-          showNotification(
-              'Order #${parsedData['orderId']} status updated to ${parsedData['status']}');
-          setState(() {
-            futureOrders = repository.fetchOrders(); // Refresh orders
-          });
-        }
-      },
-      onError: (error) {
-        print('WebSocket error: $error');
-      },
-      onDone: () {
-        print('WebSocket connection closed');
-      },
-    );
+  void _configureWebSocket() {
+    _channel.stream.listen((data) {
+      final event = jsonDecode(data);
+      setState(() {
+        _futureOrders = _repository.fetchOrders();
+      });
+    }, onError: (error) => print('WebSocket error: $error'));
   }
 
   @override
   void dispose() {
-    channel.sink.close(); // Close WebSocket connection when screen is disposed
+    _channel.sink.close();
     super.dispose();
-  }
-
-  void showNotification(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: Duration(seconds: 3),
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Kitchen Orders')),
-      body: FutureBuilder<List<Order>>(
-        future: futureOrders,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error fetching orders'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No orders available'));
-          }
-
-          final orders = snapshot.data!;
-          return ListView.builder(
-            itemCount: orders.length,
-            itemBuilder: (context, index) {
-              final order = orders[index];
-              return Card(
-                child: ListTile(
-                  title: Text('Table ${order.tableNumber} - ${order.status}'),
-                  subtitle:
-                      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    ...order.items.map((item) => Text('${item.itemName} x${item.quantity}')),
-                  ]),
-                ),
-              );
-            },
-          );
+      appBar: AppBar(
+        title: Text('Kitchen Display'),
+      ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          setState(() {
+            _futureOrders = _repository.fetchOrders();
+          });
         },
+        child: FutureBuilder<List<Order>>(
+          future: _futureOrders,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('No active orders'));
+            }
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) => OrderCard(
+                order: snapshot.data![index],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class OrderCard extends StatelessWidget {
+  final Order order;
+
+  const OrderCard({required this.order});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Order #${order.id}', 
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('Table ${order.tableNumber}'),
+            Divider(),
+            Column(
+              children: order.items.map((item) => 
+                Text('${item.quantity}x ${item.itemName}')
+              ).toList(),
+            ),
+          ],
+        ),
       ),
     );
   }
