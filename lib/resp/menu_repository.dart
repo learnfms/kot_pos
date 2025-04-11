@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../model/menu_item.dart';
 
 class MenuRepository {
-  final String baseUrl = 'http://192.168.1.5:3000/store';
+  final String baseUrl = 'http://192.168.68.122:3000/store';
 
   Future<List<MenuItem>> fetchMenuItems() async {
     final response = await http.get(Uri.parse('$baseUrl/getMenuItems'));
